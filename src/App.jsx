@@ -60,6 +60,7 @@ function App() {
       let source = new SSE(url, {
         headers: {
           "Content-Type": "application/json",
+          "OpenAI-Organization": "org-UgDlW6gbY03G8HIgMcAXFPFI",
           Authorization: `Bearer ${API_KEY}`,
         },
         method: "POST",
