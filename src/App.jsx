@@ -1,7 +1,15 @@
-import { Heading, Text, Box, Flex, Button, Textarea } from "@chakra-ui/react";
+import {
+  Heading,
+  Text,
+  Box,
+  Flex,
+  Button,
+  Textarea,
+  useToast,
+  useColorMode,
+} from "@chakra-ui/react";
 import { useEffect, useState, useRef } from "react";
 import { SSE } from "sse";
-import { useToast } from "@chakra-ui/react";
 
 const API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 
@@ -9,6 +17,7 @@ function App() {
   let [prompt, setPrompt] = useState("");
   let [response, setResponse] = useState("");
   let [isLoading, setIsLoading] = useState(false);
+  const { colorMode, toggleColorMode } = useColorMode();
 
   const responseRef = useRef(response);
   const toast = useToast();
@@ -29,7 +38,6 @@ function App() {
   let handleSubmitBtnClicked = async () => {
     if (prompt === "") {
       toast({
-        // title: API_KEY == undefined ? "API Key is not set" : "Prompt is empty",
         title: "Prompt is empty",
         description: "Please enter a prompt",
         status: "error",
@@ -59,12 +67,12 @@ function App() {
       });
 
       source.addEventListener("message", (e) => {
-        // console.log("Message: ", e.data);
+        console.log("Message: ", e.data);
         if (e.data != "[DONE]") {
           let payload = JSON.parse(e.data);
           let text = payload.choices[0].text;
           if (text != "\n") {
-            // console.log("Text: ", text);
+            console.log("Text: ", text);
             responseRef.current += text;
             setResponse(responseRef.current);
           } else {
@@ -74,20 +82,20 @@ function App() {
       });
 
       source.addEventListener("readystatechange", (e) => {
-      if (e.readyState >= 2) {
-        setIsLoading(false);
-        // console.log(source.status);
-        if (source.status === undefined) {
-          toast({
-            title: "API Key is not set",
-            description: "Please check your API key and try again.",
-            status: "error",
-            duration: 2000,
-            isClosable: true,
-          });
+        if (e.readyState >= 2) {
+          setIsLoading(false);
+          console.log(source.status);
+          if (source.status === undefined) {
+            toast({
+              title: "API Key is not set",
+              description: "Please check your API key and try again.",
+              status: "error",
+              duration: 2000,
+              isClosable: true,
+            });
+          }
         }
-      }
-    });
+      });
       source.stream();
     }
   };
@@ -98,17 +106,25 @@ function App() {
       height={"100vh"}
       alignContent={"center"}
       justifyContent={"center"}
-      bgGradient={"linear(to-b, #964dd6, #997c7e)"}
+      bg={"#062940"}
+      bgGradient={
+        "linear-gradient(#052a42,rgba(5,41,65,.8)),url(https://assets-global.website-files.com/61bcbae3ae2e8ee49aa790b0/6356aeef79abe85bcdbd3d68_grid-block.svg)"
+      }
     >
       <Box
         boxShadow="dark-lg"
         maxW="2xl"
         m="auto"
-        bg={"white"}
+        bg={colorMode === "dark" ? "#062940" : "white"}
         p="20px"
         borderRadius={"md"}
       >
-        <Heading mb={4}>🤖 OpenAI Completions</Heading>
+        <Heading mb={4}>
+          <span onClick={toggleColorMode} style={{ cursor: "pointer" }}>
+            {colorMode === "light" ? "🌝 " : "🌚 "}
+          </span>
+          🤖 OpenAI Completions{" "}
+        </Heading>
         <Text mb={4}>
           This is an example of using SSE (Server-Sent Events) with React, Vite.
         </Text>
@@ -122,7 +138,7 @@ function App() {
           isLoading={isLoading}
           loadingText="Fetching Data.."
           onClick={handleSubmitBtnClicked}
-          colorScheme={"purple"}
+          colorScheme={"blue"}
         >
           Ask
         </Button>
