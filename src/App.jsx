@@ -12,6 +12,7 @@ import { useEffect, useState, useRef } from "react";
 import { SSE } from "sse";
 
 const API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
+const API_ORG_ID = import.meta.env.VITE_OPENAI_ORG_ID;
 
 function App() {
   let [prompt, setPrompt] = useState("");
@@ -60,7 +61,7 @@ function App() {
       let source = new SSE(url, {
         headers: {
           "Content-Type": "application/json",
-          "OpenAI-Organization": "org-UgDlW6gbY03G8HIgMcAXFPFI",
+          "OpenAI-Organization": `${API_ORG_ID}`,
           Authorization: `Bearer ${API_KEY}`,
         },
         method: "POST",
